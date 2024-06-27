@@ -5,15 +5,13 @@ public class StrikerSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _gates;
     [SerializeField] GameObject _strikerPrefab;
-    
-
 
     List<GameObject> _strikerList = new List<GameObject>();
     void Start()
     {
         Vector2 targetPos = Vector2.zero;
         Vector2 spawnPos = Vector2.zero;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
         { 
 
             if(i == 0)

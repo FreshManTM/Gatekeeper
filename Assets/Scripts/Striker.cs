@@ -11,6 +11,7 @@ public class Striker : MonoBehaviour
 
     void Start()
     {
+        print("size is " + GetComponent<SpriteRenderer>().size);
         _bounds = Gates.GetComponentsInChildren<Transform>();
         if (DirectionLeft)
         {
@@ -19,10 +20,6 @@ public class Striker : MonoBehaviour
         else
         {
             _randomXSpawnPosition = Random.Range(0f, _bounds[2].position.x);
-        }
-        foreach (Transform t in _bounds)
-        {
-            print(t.localPosition.x + "  " + t.name);
         }
     }
     private void OnDrawGizmos()
