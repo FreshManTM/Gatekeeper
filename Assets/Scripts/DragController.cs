@@ -9,6 +9,7 @@ public class DragController : MonoBehaviour
 
     KeeperSpawner _spawner;
     public int _keeperAmount;
+    List<GameObject> _keepers = new List<GameObject>();
 
     private void Start()
     {
@@ -18,15 +19,21 @@ public class DragController : MonoBehaviour
     {
         _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+        GetDrag();
 
+        if (_isDraging)
+        {
+            SpawnKeepersOnDrag();
+        }
+
+    }
+
+    void GetDrag()
+    {
         #region PC version
         if (Input.GetMouseButtonDown(0))
         {
-
-            _spawner.HideAll();
-            _spawnOffset = Vector2.zero;
-            _keeperAmount = 0;
-
+            ResetDrag();
             _isDraging = true;
             _startTouch = _mousePosition;
         }
@@ -34,14 +41,12 @@ public class DragController : MonoBehaviour
         {
             _isDraging = false;
             _endTouch = _mousePosition;
-            while (GetDistance() > _keeperAmount * .3f)
+            foreach (var keeper in _keepers)
             {
-                _spawner.SpawnKeeper(_startTouch + _spawnOffset * (_endTouch - _startTouch).normalized);
-                _spawnOffset += new Vector2(.3f, .3f);
-                _keeperAmount++;
+                Color color = keeper.GetComponent<SpriteRenderer>().color;
+                color.a = 1;
+                keeper.GetComponent<SpriteRenderer>().color = color;
             }
-            print(GetDistance() + " | " + _keeperAmount * .3f);
-
         }
         #endregion
 
@@ -59,18 +64,51 @@ public class DragController : MonoBehaviour
             }
         }
         #endregion
-        
+    }
 
-        if (_isDraging)
+    private void ResetDrag()
+    {
+        _spawner.HideAll();
+        _spawnOffset = Vector2.zero;
+        _keeperAmount = 0;
+        foreach (var keeper in _keepers)
         {
+            Color color = keeper.GetComponent<SpriteRenderer>().color;
+            color.a = .1f;
+            keeper.GetComponent<SpriteRenderer>().color = color;
+        }
+        _keepers.Clear();
+    }
 
+    void SpawnKeepersOnDrag()
+    {
+        if (GetDistance() > _keeperAmount * .3f)
+        {
+            _keepers.Add(_spawner.SpawnKeeper(_startTouch + _spawnOffset * (_endTouch - _startTouch).normalized));
+            _spawnOffset += new Vector2(.3f, .3f);
+            _keeperAmount++;
+        }
+        else if (GetDistance() < (_keeperAmount * .3f) - .3f)
+        {
+            _keepers[_keepers.Count - 1].SetActive(false);
+            _keepers.RemoveAt(_keepers.Count - 1);
+            _spawnOffset -= new Vector2(.3f, .3f);
+            _keeperAmount--;
         }
 
+        _spawnOffset = Vector2.zero;
+        _keeperAmount = 0;
+        foreach (var keeper in _keepers)
+        {
+            keeper.transform.position = _startTouch + _spawnOffset * (_mousePosition - _startTouch).normalized;
+            _spawnOffset += new Vector2(.3f, .3f);
+            _keeperAmount++;
+        }
     }
 
     public float GetDistance()
     {
-        return Vector2.Distance(_startTouch, _endTouch);
+        return Vector2.Distance(_startTouch, _mousePosition);
 
     }
 
@@ -78,6 +116,5 @@ public class DragController : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(_startTouch, _mousePosition);
-        //print(Vector2.Distance(_startTouch, _mousePosition));
     }
 }

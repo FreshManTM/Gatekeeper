@@ -11,7 +11,7 @@ public class KeeperSpawner : MonoBehaviour
     {
     }
 
-    public void SpawnKeeper(Vector2 spawnPos)
+    public GameObject SpawnKeeper(Vector2 spawnPos)
     {
         foreach (var keeper in _keepers)
         {
@@ -19,9 +19,10 @@ public class KeeperSpawner : MonoBehaviour
             {
                 keeper.SetActive(true);
                 keeper.transform.position = spawnPos;
-                return;
+                return keeper;
             }
         }
+        return null;
     }
     public void HideAll()
     {

@@ -11,7 +11,6 @@ public class Striker : MonoBehaviour
 
     void Start()
     {
-        print("size is " + GetComponent<SpriteRenderer>().size);
         _bounds = Gates.GetComponentsInChildren<Transform>();
         if (DirectionLeft)
         {

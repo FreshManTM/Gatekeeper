@@ -11,41 +11,35 @@ public class StrikerSpawner : MonoBehaviour
     {
         Vector2 targetPos = Vector2.zero;
         Vector2 spawnPos = Vector2.zero;
+        GameObject striker;
         for (int i = 0; i < 2; i++)
         { 
-
             if(i == 0)
             {
                 spawnPos = new Vector2(Random.Range(-2.5f, 2.5f), Random.Range(-5f, -2f));
-                GameObject striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
-                _strikerList.Add(striker);
+                striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
 
-                _strikerList[i].GetComponent<Striker>().DirectionLeft = !CheckIsLeftSpawn(spawnPos);
+                striker.GetComponent<Striker>().DirectionLeft = !CheckIsLeftSpawn(spawnPos);
             }
             else
             {
                 if (CheckIsLeftSpawn(spawnPos))
                 {
-                    spawnPos = new Vector2(Random.Range(spawnPos.x + .5f, spawnPos.x + 1.5f), Random.Range(-5f, -2f));
+                    spawnPos.x = Random.Range(spawnPos.x + .5f, spawnPos.x + 1.5f);
                 }
                 else
                 {
-                    spawnPos = new Vector2(Random.Range(spawnPos.x - .5f, spawnPos.x - 1.5f), Random.Range(-5f, -2f));
+                    spawnPos.x = Random.Range(spawnPos.x - .5f, spawnPos.x - 1.5f);
                 }
+                spawnPos.y = Random.Range(-5f, -2f);
 
-                GameObject striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
-                _strikerList.Add(striker);
-                _strikerList[i].GetComponent<Striker>().DirectionLeft = !_strikerList[0].GetComponent<Striker>().DirectionLeft;
+                striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
+                striker.GetComponent<Striker>().DirectionLeft = !_strikerList[0].GetComponent<Striker>().DirectionLeft;
 
             }
-
-
+            _strikerList.Add(striker);
             _strikerList[i].GetComponent<Striker>().Gates = _gates;
-
-
         }
-
-
     }
 
     bool CheckIsLeftSpawn(Vector2 spawnPos)
