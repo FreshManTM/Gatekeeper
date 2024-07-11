@@ -5,11 +5,9 @@ using UnityEngine;
 public class DragController : MonoBehaviour
 {
     public bool _isDraging = false;
-    public Vector2 _startTouch, _endTouch, _mousePosition, _spawnOffset, _swipeDelta;
+    public Vector2 _startTouch, _mousePosition;
 
     KeeperSpawner _spawner;
-    public int _keeperAmount;
-    List<GameObject> _keepers = new List<GameObject>();
 
     private void Start()
     {
@@ -23,7 +21,7 @@ public class DragController : MonoBehaviour
 
         if (_isDraging)
         {
-            SpawnKeepersOnDrag();
+            _spawner.SpawnKeepersOnDrag(_startTouch, _mousePosition);
         }
 
     }
@@ -33,20 +31,13 @@ public class DragController : MonoBehaviour
         #region PC version
         if (Input.GetMouseButtonDown(0))
         {
-            ResetDrag();
             _isDraging = true;
             _startTouch = _mousePosition;
         }
         else if (Input.GetMouseButtonUp(0))
         {
             _isDraging = false;
-            _endTouch = _mousePosition;
-            foreach (var keeper in _keepers)
-            {
-                Color color = keeper.GetComponent<SpriteRenderer>().color;
-                color.a = 1;
-                keeper.GetComponent<SpriteRenderer>().color = color;
-            }
+            _spawner.SetKeepers();
         }
         #endregion
 
@@ -61,55 +52,10 @@ public class DragController : MonoBehaviour
             else if (Input.touches[0].phase == TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
             {
                 _isDraging = false;
+                _spawner.SetKeepers();
             }
         }
         #endregion
-    }
-
-    private void ResetDrag()
-    {
-        _spawner.HideAll();
-        _spawnOffset = Vector2.zero;
-        _keeperAmount = 0;
-        foreach (var keeper in _keepers)
-        {
-            Color color = keeper.GetComponent<SpriteRenderer>().color;
-            color.a = .1f;
-            keeper.GetComponent<SpriteRenderer>().color = color;
-        }
-        _keepers.Clear();
-    }
-
-    void SpawnKeepersOnDrag()
-    {
-        if (GetDistance() > _keeperAmount * .3f)
-        {
-            _keepers.Add(_spawner.SpawnKeeper(_startTouch + _spawnOffset * (_endTouch - _startTouch).normalized));
-            _spawnOffset += new Vector2(.3f, .3f);
-            _keeperAmount++;
-        }
-        else if (GetDistance() < (_keeperAmount * .3f) - .3f)
-        {
-            _keepers[_keepers.Count - 1].SetActive(false);
-            _keepers.RemoveAt(_keepers.Count - 1);
-            _spawnOffset -= new Vector2(.3f, .3f);
-            _keeperAmount--;
-        }
-
-        _spawnOffset = Vector2.zero;
-        _keeperAmount = 0;
-        foreach (var keeper in _keepers)
-        {
-            keeper.transform.position = _startTouch + _spawnOffset * (_mousePosition - _startTouch).normalized;
-            _spawnOffset += new Vector2(.3f, .3f);
-            _keeperAmount++;
-        }
-    }
-
-    public float GetDistance()
-    {
-        return Vector2.Distance(_startTouch, _mousePosition);
-
     }
 
     private void OnDrawGizmos()

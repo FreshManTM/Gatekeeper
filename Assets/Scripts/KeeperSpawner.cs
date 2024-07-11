@@ -1,34 +1,108 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class KeeperSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject[] _keepers;
     [SerializeField] GameObject _keeperPrefab;
+    ObjectPool _pool;
+    public Vector2 _spawnOffset;
 
-    private void Update()
+    [SerializeField] int _currentKeeperAmount, _keeperAmount, _maxKeeperAmount;
+    [SerializeField] float _keeperSize = .3f;
+    [SerializeField] float _keeperMoveSpeed = 10;
+    [SerializeField]List<GameObject> _keepers = new List<GameObject>();
+    List<GameObject> _keepersOnDrag = new List<GameObject>();
+
+    private void Start()
     {
+        _pool = ObjectPool.Instance;
+        _pool.PreLoad(_keeperPrefab, 10);
     }
 
-    public GameObject SpawnKeeper(Vector2 spawnPos)
+    public void SpawnKeeper()
     {
-        foreach (var keeper in _keepers)
+
+        _keepersOnDrag.Add(_pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity));
+        _currentKeeperAmount++;
+        
+    }
+
+    public void SpawnKeepersOnDrag(Vector2 startTouch, Vector2 mousePosition)
+    {
+        float distance = Vector2.Distance(startTouch, mousePosition);
+
+        if (distance > _currentKeeperAmount * _keeperSize && _keeperAmount + _currentKeeperAmount < _keeperAmount + _maxKeeperAmount)
         {
-            if (!keeper.active)
+            SpawnKeeper();
+        }
+        else if (distance< (_currentKeeperAmount * _keeperSize) - _keeperSize)
+        {
+            DespawnKeeper(_keepersOnDrag[_keepersOnDrag.Count - 1]);
+            _keepersOnDrag.RemoveAt(_keepersOnDrag.Count - 1);
+            _currentKeeperAmount--;
+        }
+
+        _spawnOffset = Vector2.zero;
+        foreach (var keeper in _keepersOnDrag)
+        {
+            keeper.transform.position = startTouch + _spawnOffset * (mousePosition - startTouch).normalized;
+            _spawnOffset += new Vector2(_keeperSize, _keeperSize);
+        }
+    }
+
+    public void SetKeepers()
+    {
+        StopAllCoroutines();
+
+        foreach (var keeper in _keepersOnDrag)
+        {
+            if (_keeperAmount < _maxKeeperAmount)
             {
-                keeper.SetActive(true);
-                keeper.transform.position = spawnPos;
-                return keeper;
+                _keepers.Add(keeper);
+                _keeperAmount++;
+                Color color = keeper.GetComponent<SpriteRenderer>().color;
+                color.a = 1;
+                keeper.GetComponent<SpriteRenderer>().color = color;
+                keeper.GetComponent<BoxCollider2D>().enabled = true;
+            }
+            else
+            {
+                var destinationPos = keeper.transform.position;
+                StartCoroutine(IMoveKeeper(_keepers[0].transform, destinationPos));
+                _keepers.Add(_keepers[0]);
+                _keepers.Remove(_keepers[0]);
+                DespawnKeeper(keeper);
             }
         }
-        return null;
+
+        ResetDrag();
     }
-    public void HideAll()
+
+    IEnumerator IMoveKeeper(Transform keeper, Vector2 destinationPos)
     {
-        foreach (var keeper in _keepers)
+        if ((Vector2)keeper.position != destinationPos)
         {
-            keeper.SetActive(false);
+            keeper.position = Vector2.MoveTowards(keeper.position, destinationPos, _keeperMoveSpeed * Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
+            StartCoroutine(IMoveKeeper(keeper, destinationPos));
         }
+        else
+        {
+            yield return null;
+        }
+
+    }
+    void ResetDrag()
+    {
+        _spawnOffset = Vector2.zero;
+        _currentKeeperAmount = 0;
+        _keepersOnDrag.Clear();
+    }
+
+    public void DespawnKeeper(GameObject keeper)
+    {
+        _pool.Despawn(keeper);
     }
 }
