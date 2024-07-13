@@ -18,13 +18,13 @@ public class KeeperSpawner : MonoBehaviour
     private void Start()
     {
         _pool = ObjectPool.Instance;
-        _pool.PreLoad(_keeperPrefab, 10);
+        //_pool.PreLoad(_keeperPrefab, 10);
     }
 
     public void SpawnKeeper()
     {
 
-        _keepersOnDrag.Add(_pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity));
+        _keepersOnDrag.Add(_pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity, transform));
         _currentKeeperAmount++;
         
     }

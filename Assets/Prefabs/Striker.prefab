@@ -97,3 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e213da46d387e429e3433aa7c383ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Gates: {fileID: 0}
+  DirectionLeft: 0
+  _ballPrefab: {fileID: 61350789427889628, guid: 60434a44143300748b58f4aa5d652b16, type: 3}
+  _ballSpeed: 0

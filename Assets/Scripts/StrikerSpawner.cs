@@ -6,18 +6,22 @@ public class StrikerSpawner : MonoBehaviour
     [SerializeField] GameObject _gates;
     [SerializeField] GameObject _strikerPrefab;
 
+    Vector2 spawnPos = Vector2.zero;
+
     List<GameObject> _strikerList = new List<GameObject>();
+    ObjectPool _pool;
+
     void Start()
     {
-        Vector2 targetPos = Vector2.zero;
-        Vector2 spawnPos = Vector2.zero;
+        _pool = ObjectPool.Instance;
+
         GameObject striker;
         for (int i = 0; i < 2; i++)
         { 
             if(i == 0)
             {
                 spawnPos = new Vector2(Random.Range(-2.5f, 2.5f), Random.Range(-5f, -2f));
-                striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
+                striker = _pool.Spawn(_strikerPrefab, spawnPos, Quaternion.identity, transform);
 
                 striker.GetComponent<Striker>().DirectionLeft = !CheckIsLeftSpawn(spawnPos);
             }
@@ -33,12 +37,11 @@ public class StrikerSpawner : MonoBehaviour
                 }
                 spawnPos.y = Random.Range(-5f, -2f);
 
-                striker = Instantiate(_strikerPrefab, spawnPos, Quaternion.identity);
+                striker = _pool.Spawn(_strikerPrefab, spawnPos, Quaternion.identity, transform);
                 striker.GetComponent<Striker>().DirectionLeft = !_strikerList[0].GetComponent<Striker>().DirectionLeft;
-
             }
             _strikerList.Add(striker);
-            _strikerList[i].GetComponent<Striker>().Gates = _gates;
+            _strikerList[i].GetComponent<Striker>()._bounds = _gates.GetComponentsInChildren<Transform>();
         }
     }
 

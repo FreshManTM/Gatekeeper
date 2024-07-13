@@ -68,10 +68,10 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
-    public GameObject Spawn(GameObject prefab, Vector3 pos, Quaternion rot)
+    public GameObject Spawn(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent = null)
     {
         Init(prefab);
-        return pools[prefab.name].Spawn(pos, rot, transform);
+        return pools[prefab.name].Spawn(pos, rot, parent);
     }
 
     public void Despawn(GameObject obj)
