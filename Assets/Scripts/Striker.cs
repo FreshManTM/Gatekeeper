@@ -8,28 +8,50 @@ public class Striker : MonoBehaviour
     public bool DirectionLeft;
 
     [SerializeField] GameObject _ballPrefab;
-    [SerializeField] float _ballSpeed; 
     float _randomXSpawnPosition;
     public Transform[] _bounds;
     ObjectPool _pool;
     Vector2 _strikePos;
-        
 
-    void Start()
+    GameObject _ball;
+    public void Init(float strikeDelay)
     {
         _pool = ObjectPool.Instance;
         if (DirectionLeft)
         {
-            _randomXSpawnPosition = Random.Range(_bounds[1].position.x, 0f);
+            _randomXSpawnPosition = Random.Range(_bounds[0].position.x, 0f);
         }
         else
         {
-            _randomXSpawnPosition = Random.Range(0f, _bounds[2].position.x);
+            _randomXSpawnPosition = Random.Range(0f, _bounds[1].position.x);
         }
-
-        GameObject ball = _pool.Spawn(_ballPrefab, transform.position, Quaternion.identity);
+        Vector2 ballSpawnPos = (Vector2)transform.position + Vector2.up *Vector2.one;
+        _ball = _pool.Spawn(_ballPrefab, ballSpawnPos, Quaternion.identity);
         _strikePos = new Vector2(_randomXSpawnPosition, _bounds[0].position.y);
-        ball.GetComponent<Ball>().Init(_strikePos);
+        StartCoroutine(IStrike(strikeDelay, ballSpawnPos));
+    }
+    
+    IEnumerator IStrike(float delay, Vector2 ballPos)
+    {
+        delay -= Time.fixedDeltaTime;
+        if(delay <= 0f)
+        {
+            _ball.GetComponent<Ball>().Init(_strikePos);
+            Invoke("Despawn", 1f);
+            yield return null;
+        }
+        else
+        {
+            yield return new WaitForFixedUpdate();
+            var distance = Vector2.Distance(transform.position, ballPos);
+            transform.position = Vector2.MoveTowards(transform.position, ballPos, distance / delay * Time.fixedDeltaTime);
+            StartCoroutine(IStrike(delay, ballPos));
+        }
+    }
+
+    void Despawn()
+    {
+        _pool.Despawn(gameObject);
     }
 
 }

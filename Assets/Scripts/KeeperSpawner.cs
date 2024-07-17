@@ -6,14 +6,16 @@ using UnityEngine;
 public class KeeperSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _keeperPrefab;
-    ObjectPool _pool;
-    public Vector2 _spawnOffset;
 
-    [SerializeField] int _currentKeeperAmount, _keeperAmount, _maxKeeperAmount;
-    [SerializeField] float _keeperSize = .3f;
-    [SerializeField] float _keeperMoveSpeed = 10;
-    [SerializeField]List<GameObject> _keepers = new List<GameObject>();
+    [SerializeField] int _maxKeeperAmount;
+    [SerializeField] float _keeperSize;
+    [SerializeField] float _keeperMoveSpeed;
+
+    List<GameObject> _keepers = new List<GameObject>();
     List<GameObject> _keepersOnDrag = new List<GameObject>();
+    int _currentKeeperAmount, _keeperAmount;
+    Vector2 _spawnOffset;
+    ObjectPool _pool;
 
     private void Start()
     {
@@ -23,10 +25,8 @@ public class KeeperSpawner : MonoBehaviour
 
     public void SpawnKeeper()
     {
-
         _keepersOnDrag.Add(_pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity, transform));
         _currentKeeperAmount++;
-        
     }
 
     public void SpawnKeepersOnDrag(Vector2 startTouch, Vector2 mousePosition)
@@ -77,7 +77,9 @@ public class KeeperSpawner : MonoBehaviour
             }
         }
 
-        ResetDrag();
+        _spawnOffset = Vector2.zero;
+        _currentKeeperAmount = 0;
+        _keepersOnDrag.Clear();
     }
 
     IEnumerator IMoveKeeper(Transform keeper, Vector2 destinationPos)
@@ -93,12 +95,6 @@ public class KeeperSpawner : MonoBehaviour
             yield return null;
         }
 
-    }
-    void ResetDrag()
-    {
-        _spawnOffset = Vector2.zero;
-        _currentKeeperAmount = 0;
-        _keepersOnDrag.Clear();
     }
 
     public void DespawnKeeper(GameObject keeper)

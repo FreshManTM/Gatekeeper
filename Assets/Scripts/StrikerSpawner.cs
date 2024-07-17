@@ -1,47 +1,67 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class StrikerSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject _gates;
+    [SerializeField] Transform[] _gateBounds;
     [SerializeField] GameObject _strikerPrefab;
 
-    Vector2 spawnPos = Vector2.zero;
+    GameObject _striker, _firstStriker;
 
-    List<GameObject> _strikerList = new List<GameObject>();
+    Vector2 _spawnPos;
+    float _delayBetweenWaves;
+
     ObjectPool _pool;
+    LevelInfo _level;
 
     void Start()
     {
         _pool = ObjectPool.Instance;
+        _level = GameManager.Instance.CurrentLevelInfo;
+        _delayBetweenWaves = _level.LevelTime / _level.StrikerWavesAmount;
+        StartCoroutine(ISpawnWave());
+    }
 
-        GameObject striker;
-        for (int i = 0; i < 2; i++)
-        { 
-            if(i == 0)
+    IEnumerator ISpawnWave()
+    {
+        yield return new WaitForSeconds(_delayBetweenWaves);
+        SpawnStrikers();
+        StartCoroutine(ISpawnWave());
+    }
+
+    void SpawnStrikers()
+    {
+
+        int strikerAmount = Random.Range(2, _level.MaxStrikerAmountPerWave + 1);
+
+        for (int i = 0; i < strikerAmount; i++)
+        {
+            if (i == 0)
             {
-                spawnPos = new Vector2(Random.Range(-2.5f, 2.5f), Random.Range(-5f, -2f));
-                striker = _pool.Spawn(_strikerPrefab, spawnPos, Quaternion.identity, transform);
+                _spawnPos = new Vector2(Random.Range(-2.5f, 2.5f), Random.Range(-5f, -2f));
+                _striker = _pool.Spawn(_strikerPrefab, _spawnPos, Quaternion.identity, transform);
 
-                striker.GetComponent<Striker>().DirectionLeft = !CheckIsLeftSpawn(spawnPos);
+                _striker.GetComponent<Striker>().DirectionLeft = !CheckIsLeftSpawn(_spawnPos);
+                _firstStriker = _striker;
             }
             else
             {
-                if (CheckIsLeftSpawn(spawnPos))
+                if (CheckIsLeftSpawn(_spawnPos))
                 {
-                    spawnPos.x = Random.Range(spawnPos.x + .5f, spawnPos.x + 1.5f);
+                    _spawnPos.x = Random.Range(_spawnPos.x + .5f, _spawnPos.x + 1.5f);
                 }
                 else
                 {
-                    spawnPos.x = Random.Range(spawnPos.x - .5f, spawnPos.x - 1.5f);
+                    _spawnPos.x = Random.Range(_spawnPos.x - .5f, _spawnPos.x - 1.5f);
                 }
-                spawnPos.y = Random.Range(-5f, -2f);
+                _spawnPos.y = Random.Range(-5f, -2f);
 
-                striker = _pool.Spawn(_strikerPrefab, spawnPos, Quaternion.identity, transform);
-                striker.GetComponent<Striker>().DirectionLeft = !_strikerList[0].GetComponent<Striker>().DirectionLeft;
+                _striker = _pool.Spawn(_strikerPrefab, _spawnPos, Quaternion.identity, transform);
+                _striker.GetComponent<Striker>().DirectionLeft = !_firstStriker.GetComponent<Striker>().DirectionLeft;
             }
-            _strikerList.Add(striker);
-            _strikerList[i].GetComponent<Striker>()._bounds = _gates.GetComponentsInChildren<Transform>();
+            _striker.GetComponent<Striker>()._bounds = _gateBounds;
+            _striker.GetComponent<Striker>().Init(strikerAmount);
         }
     }
 

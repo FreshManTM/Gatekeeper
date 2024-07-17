@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DragController : MonoBehaviour
 {
-    public bool _isDraging = false;
-    public Vector2 _startTouch, _mousePosition;
+    bool _isDraging = false;
+    Vector2 _startTouch, _mousePosition;
 
     KeeperSpawner _spawner;
 
@@ -23,7 +23,6 @@ public class DragController : MonoBehaviour
         {
             _spawner.SpawnKeepersOnDrag(_startTouch, _mousePosition);
         }
-
     }
 
     void GetDrag()

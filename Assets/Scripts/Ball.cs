@@ -8,21 +8,14 @@ public class Ball : MonoBehaviour
     Rigidbody2D _rb;
     Vector2 _strikePos;
     [SerializeField] float _speed;
-    private void Start()
-    {
-        _rb = GetComponent<Rigidbody2D>();
-        StartCoroutine(IMove());
-
-    }
 
     public void Init(Vector2 strikePos)
     {
         _strikePos = strikePos;
+        _rb = GetComponent<Rigidbody2D>();
+        StartCoroutine(IMove());
     }
 
-    private void FixedUpdate()
-    {
-    }
     IEnumerator IMove()
     {
         _rb.AddForce((_strikePos - (Vector2)transform.position).normalized * _speed * Time.fixedDeltaTime, ForceMode2D.Impulse);
@@ -30,22 +23,26 @@ public class Ball : MonoBehaviour
         StartCoroutine(IMove());
     }
 
-
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         switch (collision.gameObject.tag)
         {
             case "Keeper":
                 StopAllCoroutines();
+                Invoke("Despawn", 2f);
                 break;
             case "Bounds":
+                StopAllCoroutines();
                 _rb.velocity = Vector2.zero;
+                transform.position = collision.contacts[0].point;
+                Invoke("Despawn", 2f);
                 break;
-
         }
-        print(collision.gameObject.tag);
+    }
 
+    void Despawn()
+    {
+        ObjectPool.Instance.Despawn(gameObject);
     }
 
     private void OnDrawGizmos()
