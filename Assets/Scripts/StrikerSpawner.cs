@@ -61,7 +61,7 @@ public class StrikerSpawner : MonoBehaviour
                 _striker.GetComponent<Striker>().DirectionLeft = !_firstStriker.GetComponent<Striker>().DirectionLeft;
             }
             _striker.GetComponent<Striker>()._bounds = _gateBounds;
-            _striker.GetComponent<Striker>().Init(strikerAmount);
+            _striker.GetComponent<Striker>().Init(strikerAmount / 2);
         }
     }
 

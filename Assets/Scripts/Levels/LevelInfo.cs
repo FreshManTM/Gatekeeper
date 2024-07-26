@@ -11,5 +11,4 @@ public class LevelInfo: ScriptableObject
     public int LevelTime;
     public int StrikerWavesAmount;
     public int MaxStrikerAmountPerWave;
-
 }

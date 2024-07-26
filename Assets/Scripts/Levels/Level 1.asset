@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelNumber: 1
   LevelTime: 20
-  StrikerWavesAmount: 10
+  StrikerWavesAmount: 5
   MaxStrikerAmountPerWave: 2

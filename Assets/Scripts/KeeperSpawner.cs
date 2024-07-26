@@ -20,7 +20,7 @@ public class KeeperSpawner : MonoBehaviour
     private void Start()
     {
         _pool = ObjectPool.Instance;
-        //_pool.PreLoad(_keeperPrefab, 10);
+        _maxKeeperAmount = GameManager.Instance._maxKeepers;
     }
 
     public void SpawnKeeper()
