@@ -1,15 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class KeeperSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _keeperPrefab;
 
-    [SerializeField] int _maxKeeperAmount;
+    [ReadOnly(true)]
     [SerializeField] float _keeperSize;
     [SerializeField] float _keeperMoveSpeed;
+    [SerializeField] int _maxKeeperAmount;
 
     List<GameObject> _keepers = new List<GameObject>();
     List<GameObject> _keepersOnDrag = new List<GameObject>();
@@ -20,12 +22,16 @@ public class KeeperSpawner : MonoBehaviour
     private void Start()
     {
         _pool = ObjectPool.Instance;
-        _maxKeeperAmount = GameManager.Instance._maxKeepers;
+        _keeperSize = GameManager.Instance.KeeperSize;
+        _keeperMoveSpeed = GameManager.Instance.KeeperSpeed;
+        _maxKeeperAmount = GameManager.Instance.KeeperAmount;
     }
 
     public void SpawnKeeper()
     {
-        _keepersOnDrag.Add(_pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity, transform));
+        var keeper = _pool.Spawn(_keeperPrefab, Vector2.zero, Quaternion.identity, transform);
+        keeper.transform.localScale = new Vector2(_keeperSize, _keeperSize);
+        _keepersOnDrag.Add(keeper);
         _currentKeeperAmount++;
     }
 
@@ -33,11 +39,19 @@ public class KeeperSpawner : MonoBehaviour
     {
         float distance = Vector2.Distance(startTouch, mousePosition);
 
-        if (distance > _currentKeeperAmount * _keeperSize && _keeperAmount + _currentKeeperAmount < _keeperAmount + _maxKeeperAmount)
+        if (distance > _currentKeeperAmount * _keeperSize &&
+            _keeperAmount + _currentKeeperAmount < _keeperAmount + _maxKeeperAmount &&
+            mousePosition.y < 2.5f)
         {
             SpawnKeeper();
         }
-        else if (distance< (_currentKeeperAmount * _keeperSize) - _keeperSize)
+        else if (distance < (_currentKeeperAmount * _keeperSize) - _keeperSize)
+        {
+            DespawnKeeper(_keepersOnDrag[_keepersOnDrag.Count - 1]);
+            _keepersOnDrag.RemoveAt(_keepersOnDrag.Count - 1);
+            _currentKeeperAmount--;
+        }
+        else if (mousePosition.y > 2.5f && _keepersOnDrag[_keepersOnDrag.Count - 1].gameObject.transform.position.y >= 2.5f)
         {
             DespawnKeeper(_keepersOnDrag[_keepersOnDrag.Count - 1]);
             _keepersOnDrag.RemoveAt(_keepersOnDrag.Count - 1);

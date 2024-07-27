@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI _missText;
     [SerializeField] TextMeshProUGUI _saveText;
 
+    GameManager _gameManager;
     float _timer;
     int _saves;
     int _misses;
@@ -26,6 +27,9 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        _gameManager = GameManager.Instance;
+
+        _timer = _gameManager.CurrentLevelInfo.LevelTime;
         StartCoroutine(ITimer());  
     }
 
@@ -72,5 +76,10 @@ public class LevelManager : MonoBehaviour
     public void MenuButton()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void LoadNextLevel()
+    {
+        _gameManager.LoadLevel(_gameManager.CurrentLevelInfo.LevelNumber + 1);
     }
 }
