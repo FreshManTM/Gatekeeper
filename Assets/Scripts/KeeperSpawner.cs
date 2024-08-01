@@ -16,6 +16,7 @@ public class KeeperSpawner : MonoBehaviour
     List<GameObject> _keepers = new List<GameObject>();
     List<GameObject> _keepersOnDrag = new List<GameObject>();
     int _currentKeeperAmount, _keeperAmount;
+    float _keepersSpawnYLimit = 2.5f;
     Vector2 _spawnOffset;
     ObjectPool _pool;
 
@@ -51,7 +52,8 @@ public class KeeperSpawner : MonoBehaviour
             _keepersOnDrag.RemoveAt(_keepersOnDrag.Count - 1);
             _currentKeeperAmount--;
         }
-        else if (mousePosition.y > 2.5f && _keepersOnDrag[_keepersOnDrag.Count - 1].gameObject.transform.position.y >= 2.5f)
+        // Set the limit not to spawn the keepers too close to the gate
+        else if (mousePosition.y > _keepersSpawnYLimit && _keepersOnDrag[_keepersOnDrag.Count - 1].gameObject.transform.position.y >= _keepersSpawnYLimit)
         {
             DespawnKeeper(_keepersOnDrag[_keepersOnDrag.Count - 1]);
             _keepersOnDrag.RemoveAt(_keepersOnDrag.Count - 1);

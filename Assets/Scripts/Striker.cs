@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class Striker : MonoBehaviour
 {
+    public Transform[] _bounds;
     public bool DirectionLeft;
 
     [SerializeField] GameObject _ballPrefab;
+    [SerializeField] AudioSource _kickSound;
     float _randomXSpawnPosition;
-    public Transform[] _bounds;
     ObjectPool _pool;
     Vector2 _strikePos;
 
@@ -37,6 +38,7 @@ public class Striker : MonoBehaviour
         if(delay <= 0f)
         {
             _ball.GetComponent<Ball>().Init(_strikePos);
+            _kickSound.Play();
             Invoke("Despawn", 1f);
             yield return null;
         }

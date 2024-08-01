@@ -15,4 +15,4 @@ MonoBehaviour:
   LevelNumber: 3
   LevelTime: 60
   StrikerWavesAmount: 10
-  MaxStrikerAmountPerWave: 4
+  MaxStrikerAmountPerWave: 3

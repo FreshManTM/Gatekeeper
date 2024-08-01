@@ -11,6 +11,7 @@ public class StrikerSpawner : MonoBehaviour
 
     Vector2 _spawnPos;
     float _delayBetweenWaves;
+    float _delayBeforeLevel = 5f;
     int _wavesSpawned;
 
     ObjectPool _pool;
@@ -26,6 +27,8 @@ public class StrikerSpawner : MonoBehaviour
 
     IEnumerator ISpawnWave()
     {
+        if (_wavesSpawned == 0)
+            yield return new WaitForSeconds(_delayBeforeLevel);
         SpawnStrikers();
         _wavesSpawned++;
 

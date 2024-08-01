@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor.SearchService;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [SerializeField] LevelInfo[] _levelInfo;
-    [SerializeField] int _currentLevel;
+    [SerializeField,ReadOnly] int _currentLevel;
 
     public LevelInfo CurrentLevelInfo;
     public int Coins { get; private set; }
@@ -23,7 +20,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         LoadInfo();
-        //AddCoins(1000);
+        Coins = 1000;
     }
 
     public void LoadLevel(int levelNumber)

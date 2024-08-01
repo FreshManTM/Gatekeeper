@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Level 2
   m_EditorClassIdentifier: 
   LevelNumber: 2
-  LevelTime: 60
-  StrikerWavesAmount: 6
-  MaxStrikerAmountPerWave: 3
+  LevelTime: 30
+  StrikerWavesAmount: 7
+  MaxStrikerAmountPerWave: 2

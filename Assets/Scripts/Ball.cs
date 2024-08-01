@@ -6,11 +6,13 @@ using UnityEngine.Assertions.Must;
 
 public class Ball : MonoBehaviour
 {
+    [SerializeField] float _speed;
+    [SerializeField] AudioSource _saveSound;
+    [SerializeField] AudioSource _failSound;
+    LevelManager _lvlManager;
     Rigidbody2D _rb;
     Vector2 _strikePos;
-    [SerializeField] float _speed;
 
-    LevelManager _lvlManager;
     bool collided;
     public void Init(Vector2 strikePos)
     {
@@ -36,14 +38,16 @@ public class Ball : MonoBehaviour
             switch (collision.gameObject.tag)
             {
                 case "Keeper":
-                    collided = true;
                     StopAllCoroutines();
+                    collided = true;
                     _lvlManager.BallSave();
+                    _rb.velocity = _rb.velocity / 2;
+                    _saveSound.Play();
                     Invoke("Despawn", 2f);
                     break;
                 case "Bounds":
-                    collided = true;
                     StopAllCoroutines();
+                    collided = true;
                     _rb.velocity = Vector2.zero;
                     transform.position = collision.contacts[0].point;
                     Invoke("Despawn", 2f);
@@ -58,6 +62,7 @@ public class Ball : MonoBehaviour
             StopAllCoroutines();
             _lvlManager.BallMiss();
             _rb.velocity = _rb.velocity / 2;
+            _failSound.Play();
         }
     }
     void Despawn()
