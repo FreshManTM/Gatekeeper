@@ -64,7 +64,7 @@ public class KeeperSpawner : MonoBehaviour
         foreach (var keeper in _keepersOnDrag)
         {
             keeper.transform.position = startTouch + _spawnOffset * (mousePosition - startTouch).normalized;
-            _spawnOffset += new Vector2(_keeperSize, _keeperSize);
+            _spawnOffset += new Vector2(_keeperSize - .01f, _keeperSize);
         }
     }
 

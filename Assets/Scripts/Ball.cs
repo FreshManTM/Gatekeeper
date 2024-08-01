@@ -59,12 +59,14 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.tag == "Gates")
         {
+            print("Gates");
             StopAllCoroutines();
             _lvlManager.BallMiss();
             _rb.velocity = _rb.velocity / 2;
             _failSound.Play();
         }
     }
+
     void Despawn()
     {
         ObjectPool.Instance.Despawn(gameObject);

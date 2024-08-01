@@ -95,6 +95,7 @@ public class LevelManager : MonoBehaviour
 
     public void MenuButton()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
 

@@ -24,7 +24,7 @@ public class MenuManager : MonoBehaviour
         _gameManager = GameManager.Instance;
         LoadUpgrades();
         if (!PlayerPrefs.HasKey("CompletedLevel"))
-            PlayerPrefs.SetInt("CompletedLevel", 1);
+            PlayerPrefs.SetInt("CompletedLevel", 0);
 
         int lastCompletedLevel = PlayerPrefs.GetInt("CompletedLevel");
         for (int i = _levelButtons.Length - 1; i >= lastCompletedLevel + 1; i--)
@@ -42,27 +42,35 @@ public class MenuManager : MonoBehaviour
     {
         if (_gameManager.Coins >= _upgradeCosts[upgradeNumber])
         {
-            _upgradeLvls[upgradeNumber] += 1;
-            _upgradeCosts[upgradeNumber] += 100;
-            _upgradeLvlText[upgradeNumber].text = $"LVL {_upgradeLvls[upgradeNumber]}";
-            _upgradeCostText[upgradeNumber].text = _upgradeCosts[upgradeNumber].ToString();
             switch (upgradeNumber)
             {
                 case 0:
                     _gameManager.UpgradeKeeperSize(_upgradeCosts[upgradeNumber]);
-                    PlayerPrefs.SetInt("KeeperSizeLvl", _upgradeLvls[upgradeNumber]);
-                    print(PlayerPrefs.GetInt("KeeperSizeLvl"));
                     break;
                 case 1:
                     _gameManager.UpgradeKeeperAmount(_upgradeCosts[upgradeNumber]);
-                    PlayerPrefs.SetInt("KeeperAmountLvl", _upgradeLvls[upgradeNumber]);
                     break;
                 case 2:
                     _gameManager.UpgradeKeeperSpeed(_upgradeCosts[upgradeNumber]);
+                    break;
+            }
+            _upgradeLvls[upgradeNumber] += 1;
+            _upgradeCosts[upgradeNumber] += 100;
+            _upgradeLvlText[upgradeNumber].text = $"LVL {_upgradeLvls[upgradeNumber]}";
+            _upgradeCostText[upgradeNumber].text = _upgradeCosts[upgradeNumber].ToString();
+
+            switch (upgradeNumber)
+            {
+                case 0:
+                    PlayerPrefs.SetInt("KeeperSizeLvl", _upgradeLvls[upgradeNumber]);
+                    break;
+                case 1:
+                    PlayerPrefs.SetInt("KeeperAmountLvl", _upgradeLvls[upgradeNumber]);
+                    break;
+                case 2:
                     PlayerPrefs.SetInt("KeeperSpeedLvl", _upgradeLvls[upgradeNumber]);
                     break;
             }
-
         }
     }
 

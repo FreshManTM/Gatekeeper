@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     public void UpgradeKeeperSize(int cost)
     {
         AddCoins(-cost);
-        KeeperSize += .1f;
+        KeeperSize += .05f;
         PlayerPrefs.SetFloat("KeeperSize", KeeperSize);
     }
 
