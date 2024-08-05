@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         LoadInfo();
-        Coins = 1000;
     }
 
     public void LoadLevel(int levelNumber)
